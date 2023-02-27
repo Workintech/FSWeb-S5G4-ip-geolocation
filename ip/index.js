@@ -1,6 +1,8 @@
 //axios import buraya gelecek
-
+import axios from 'axios'
 var benimIP;
+var DATA;
+const cards = document.querySelector('.cards')
 
 
 // ------------ değiştirmeyin --------------
@@ -70,3 +72,64 @@ async function ipAdresimiAl(){
 
 
 //kodlar buraya gelecek
+
+function getApiDetails(MYIP) {
+	return axios.get(`https://apis.ergineer.com/ipgeoapi/${MYIP}`)
+		.then((res) => {
+			// console.log('response',res.data)
+			return res.data
+		})
+		.then(data => {
+			DATA = data
+		})
+}
+
+
+function geoCard(locData) {
+	const cardDiv = document.createElement('div')
+	cardDiv.classList.add('card')
+
+	const img = document.createElement('img')
+	img.setAttribute('src', locData['ülkebayrağı'])
+	cardDiv.append(img)
+
+	const infoDiv = document.createElement('div')
+	infoDiv.classList.add('card-info')
+	cardDiv.append(infoDiv)
+
+	const ipHeader = document.createElement('h3')
+	ipHeader.classList.add('ip')
+	ipHeader.textContent = locData['sorgu']
+
+	const ulke = document.createElement('p')
+	ulke.classList.add('ulke')
+	ulke.textContent = locData['ülke'] + ' ' + locData['ülkeKodu']
+
+	const enlem = document.createElement('p')
+	enlem.textContent = `Enlem: ${locData['enlem']} Boylam: ${locData['boylam']}`
+
+	const sehir = document.createElement('p')
+	sehir.textContent = `Şehir: ${locData['şehir']}`
+
+	const saat = document.createElement('p')
+	saat.textContent = `Saat dilimi: ${locData['saatdilimi']}`
+
+
+	const para = document.createElement('p')
+	para.textContent = `Para birimi: ${locData['parabirimi']}`
+
+	const isp = document.createElement('p')
+	isp.textContent = `ISP: ${locData['isp']}`
+
+	infoDiv.append(ipHeader, ulke, enlem, sehir, saat, para, isp)
+
+	return cardDiv
+}
+
+ipAdresimiAl()
+	.then(() => {
+		getApiDetails(benimIP)
+			.then(() => {
+				cards.append(geoCard(DATA))
+			})
+	})
